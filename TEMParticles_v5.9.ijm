@@ -48,18 +48,18 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
     max_perim2_area = 55.0 - (15.0 * s);
     borderMargin = 10;
     median_radius = 2;
-    contactSmall = 0.04; 
+    contactSmall = 0.04;
     contactConsiderable = 0.14;
     gapTouch = 4.0;
 
-    parallelEdgeMinimum = 2; 
-    curvatureThreshold = 16.0 - (4.0 * s); 
+    parallelEdgeMinimum = 2;
+    curvatureThreshold = 16.0 - (4.0 * s);
     maxFusionChainMembers = 5;
     maxAspectRatioAfterMerge = 3.5 - (1.0 * s);
     concavityThreshold = 0.45 + (0.10 * s);
-    maxSizeRatioFusion = 5.5 - (1.5 * s); 
+    maxSizeRatioFusion = 5.5 - (1.5 * s);
     maxAggregateChainMembers = 18;
-    maxIterations = 4;  
+    maxIterations = 4;
     // threshold for SHORT vs LONG parallel borders
     minParallelBorderLength = 15.0;
 
@@ -86,7 +86,7 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
     logContent = logContent + "Input Directory: " + inputDir + "\n";
     logContent = logContent + "Output Directory: " + outputDir + "\n";
     logContent = logContent + "Stringency: " + stringency + "/100\n";
-    
+
     if (enableFusion == 1) {
         logContent = logContent + "Fusion Detection: Enabled\n";
     } else {
@@ -143,7 +143,7 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
 
         fileIndex = fileIndex + 1;
         showProgress(fileIndex, totalFiles);
-        
+
         logContent = logContent + "\n[" + fileIndex + "/" + totalFiles + "] " + fname + "\n";
         print("\n========== [" + fileIndex + "/" + totalFiles + "] " + fname + " ==========");
 
@@ -191,7 +191,7 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
 
         print("  PASS 1: Detecting contours...");
         logContent = logContent + "  PASS 1: Detecting contours...\n";
-        
+
         run("Analyze Particles...", "size=0-Infinity show=Outlines display clear add");
 
         nRaw = roiManager("count");
@@ -243,12 +243,12 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
         for (pos = 0; pos <= lengthOf(headingsStr); pos = pos + 1) {
             char = "";
             if (pos < lengthOf(headingsStr)) char = substring(headingsStr, pos, pos + 1);
-            
+
             if (char == "\n" || pos == lengthOf(headingsStr)) {
                 colName = substring(headingsStr, headingStart, pos);
                 colName = trim(colName);
                 upperName = toUpperCase(colName);
-                
+
                 if (lengthOf(colName) > 0) {
                     if (indexOf(upperName, "X") >= 0) {
                         if (indexOf(upperName, "CENTER") >= 0 || colName == "XM" || colName == "X") {
@@ -263,11 +263,11 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
                         }
                     }
                 }
-                
+
                 headingStart = pos + 1;
             }
         }
-        
+
         print("  Using centroid columns: " + centroidX_col + " and " + centroidY_col);
         logContent = logContent + "  Centroid columns: " + centroidX_col + ", " + centroidY_col + "\n";
 
@@ -293,14 +293,14 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
                 if (isInvalid(rawCx)) rawCx = getResult("X", 0);
                 if (isInvalid(rawCx)) rawCx = getResult("Center X", 0);
             }
-            
+
             rawCy = getResult(centroidY_col, 0);
             if (isInvalid(rawCy)) {
                 rawCy = getResult("YM", 0);
                 if (isInvalid(rawCy)) rawCy = getResult("Y", 0);
                 if (isInvalid(rawCy)) rawCy = getResult("Center Y", 0);
             }
-            
+
             run("Clear Results");
 
             // Store values
@@ -321,7 +321,7 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
             } else {
                 circArr[p] = 0;
             }
-            
+
             if (bwArr[p] > 0 && bhArr[p] > 0) {
                 extentArr[p] = safeDivide(areaArr[p], bwArr[p] * bhArr[p]);
             } else {
@@ -334,9 +334,9 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
                 if (areaArr[p] > maxAreaRaw) maxAreaRaw = areaArr[p];
             }
         }
-        
+
         print("  Stored measurements for " + nRaw + " ROIs");
-        
+
         // validation (first 3 ROIs)
         if (nRaw >= 3) {
             print("  Validation sample (ROIs 1-3): Circ=" + d2s(circArr[0],3) + "/" + d2s(circArr[1],3) + "/" + d2s(circArr[2],3));
@@ -578,7 +578,7 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
                                 }
 
                                 if (totalParallelEdges >= parallelEdgeMinimum && avgCurvature <= curvatureThreshold) {
-                                    
+
                                     selectImage("mergeHelper");
                                     run("Select All");
                                     setForegroundColor(0, 0, 0);
@@ -679,7 +679,7 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
                                 }
                                 fusionFailed = 1;  // criteria failed
                             } else {
-                                fusionFailed = 1;  // Not enough points 
+                                fusionFailed = 1;  // Not enough points
                             }
                         }
 
@@ -777,7 +777,7 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
         for (p = 0; p < nRaw; p = p + 1) {
             if (toKeep[p] == 1 && skipDueToFusion[p] == 0) {
                 finalIdx = finalIdx + 1;
-                
+
                 area_p = areaArr[p];
                 circ_p = circArr[p];
                 perim_p = perimArr[p];
@@ -789,7 +789,7 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
                 bh_p = bhArr[p];
                 cx_p = cxArr[p];
                 cy_p = cyArr[p];
-                
+
                 eqDiam = sqrt(safeDivide(area_p, PI) * 4);
 
                 if (minFer_p > 0) {
@@ -805,7 +805,7 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
                 }
 
                 cat = particleCategory[p];
-                
+
                 notes = mergeNotesByOrig[p];
                 if (notes == "NONE") {
                     notes = "SINGLE";
@@ -898,7 +898,7 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
                 setFont("SansSerif", fontSize, "bold");
 
                 run("Select None");
-                
+
                 for (p = 0; p < nRaw; p = p + 1) {
                     xText = cxArr[p] - floor(fontSize/5);
                     yText = cyArr[p] + floor(fontSize/10);
@@ -941,10 +941,10 @@ macro "TEM Batch Particle Analysis v24.01 (No Centroid CSV)" {
 
     showProgress(totalFiles, totalFiles);
     File.saveString(csvContent, resultsPath);
-    
+
     // Save log
     File.saveString(logContent, logPath);
-    
+
     run("Close All");
     run("Clear Results");
 
@@ -1041,7 +1041,7 @@ function countParallelEdgesNearContact(xArr, yArr, contactIdx, totalPerim, segme
             if (dotProduct > 0.85) parallelCount = parallelCount + 1;
         }
     }
-    
+
     // parallel borders
     longSegmentSize = maxOf(8, segmentSize * 2);
     for (i = regionStart; i < regionEnd - longSegmentSize * 2; i = i + longSegmentSize / 2) {
@@ -1058,7 +1058,7 @@ function countParallelEdgesNearContact(xArr, yArr, contactIdx, totalPerim, segme
             if (dotProduct > 0.92) parallelCount = parallelCount + 1;
         }
     }
-    
+
     return parallelCount;
 }
 
